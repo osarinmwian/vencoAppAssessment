@@ -17,7 +17,6 @@ const CallModal = (props: Props) => {
       Alert.alert("Failed to open phone app", err.message)
     );
   };
-  console.log("SLECTED_CONTACTS", props.selectedContact);
   return (
     <CustomModal
       isVisible={props.isVisible}

@@ -1,3 +1,5 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useState } from "react";
 
 export const encryptNumber = async (phoneNumber: string): Promise<string> => {
     const mapping: {
@@ -45,6 +47,4 @@ export const encryptNumber = async (phoneNumber: string): Promise<string> => {
     }
     return encrypted;
   };
-  
-
 export const placeholder = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUcrp83BUBNmqMskS8X3XpXQq8-a_BZ6RDCL7meR3w-zMSqrtM5ZJFyChGokStk50j_S0&usqp=CAU'

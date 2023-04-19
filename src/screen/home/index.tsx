@@ -8,6 +8,7 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
+  NativeModules,
 } from "react-native";
 import * as Contacts from "expo-contacts";
 import { useEffect, useState } from "react";
@@ -21,6 +22,8 @@ import CallModal from "../call_modal";
 
 export default function HomeScreen() {
   let [error, setError] = useState("");
+  const [callStatus, setCallStatus] = useState("idle");
+  const telephonyManager = NativeModules.TelephonyManager;
   const [selectedContact, setSelectedContact] = useState<any>();
   const [isModalVisible, setModalVisible] = useState(false);
   const toggleModal = (contact: any) => {
@@ -110,7 +113,33 @@ export default function HomeScreen() {
           },
         ]
       );
-    }, 50000000);
+      if (telephonyManager) {
+        const phoneStateListener = {
+          onCallStateChanged: function (state: any) {
+            switch (state) {
+              case telephonyManager.CALL_STATE_IDLE:
+                setCallStatus("idle");
+                break;
+              case telephonyManager.CALL_STATE_OFFHOOK:
+                setCallStatus("offhook");
+                break;
+              case telephonyManager.CALL_STATE_RINGING:
+                const incomingNumber = telephonyManager.EXTRA_INCOMING_NUMBER;
+                setCallStatus("ringing");
+                setCallStatus(incomingNumber);
+
+                break;
+              default:
+                break;
+            }
+          },
+        };
+
+        telephonyManager.listen(phoneStateListener);
+      } else {
+        return incomingCallNumber;
+      }
+    }, 50000);
 
     handleEncryptNumber();
     AppState.addEventListener("change", (nextAppState) => {
@@ -123,6 +152,7 @@ export default function HomeScreen() {
       clearInterval(incomingCall);
     };
   }, []);
+
   const handleEncryptNumber = async () => {
     if (contacts && contacts.length > 0) {
       const incomingCallNumber = contacts[0].phoneNumbers[0].number;
