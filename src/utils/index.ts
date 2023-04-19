@@ -34,7 +34,6 @@ export const encryptNumber = async (phoneNumber: string): Promise<string> => {
       ')': 'w',
       ' ': 'e',
     };
-  
     let encrypted = '';
     for (let i = 0; i < phoneNumber.length; i++) {
       const char = phoneNumber[i];
@@ -44,10 +43,6 @@ export const encryptNumber = async (phoneNumber: string): Promise<string> => {
         encrypted += char;
       }
     }
-  
-    // Store encrypted data to database or file system
-    // ...
-  
     return encrypted;
   };
   

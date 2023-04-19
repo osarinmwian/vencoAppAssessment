@@ -7,7 +7,6 @@ type Props = {
   isVisible: boolean;
   closeModal?: () => void;
 };
-
 const CallModal = (props: Props) => {
   return (
     <CustomModal isVisible={props.isVisible} onBackdropPress={props.closeModal}>

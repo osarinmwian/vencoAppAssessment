@@ -42,6 +42,7 @@ export const styles = StyleSheet.create({
       marginHorizontal: WP(2.7),
       marginBottom: WP(2.7),
       backgroundColor: COLORS.background,
+      color: COLORS.black
     },
     image: {
         width: WP(8.5),

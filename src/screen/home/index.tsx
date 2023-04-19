@@ -15,6 +15,7 @@ import { encryptNumber, placeholder } from "../../utils";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RouteParmaList } from "../../navigation/parma_list";
 import { styles } from "./styles";
+import Input from "../../component/input";
 
 export default function HomeScreen() {
   let [error, setError] = useState("");
@@ -155,9 +156,9 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.hwaderText}>Contacts</Text>
-      <TextInput
+      <Input
         placeholder="Search"
-        style={styles.searchInput}
+        inputStyle={styles.searchInput}
         value={searchQuery}
         onChangeText={handleSearch}
       />

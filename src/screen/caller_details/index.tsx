@@ -5,7 +5,6 @@ import { styles } from "./styles";
 
 const CallerDetailsScreen = ({ route }: any) => {
   const { contact } = route.params;
-
   return (
     <View style={styles.container}>
       <View style={styles.content}>
