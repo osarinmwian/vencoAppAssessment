@@ -13,6 +13,7 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { encryptNumber, placeholder } from "./src/utils";
 import { COLORS } from "./assets/theme";
+import { useNavigation } from "@react-navigation/native";
 
 export default function App() {
   let [error, setError] = useState("");
@@ -57,22 +58,8 @@ export default function App() {
             )
           );
           if (contact) {
-            Alert.alert(
-              "Incoming call",
-              `You have an incoming call from ${contact.firstName} ${
-                contact.lastName || ""
-              } ${contact.email} ${contact.address}(${incomingCallNumber})!`,
-              [
-                {
-                  text: "Answer",
-                  onPress: () => console.log("Answer pressed"),
-                },
-                {
-                  text: "Ignore",
-                  onPress: () => console.log("Ignore pressed"),
-                },
-              ]
-            );
+            const navigation = useNavigation();
+            navigation.navigate("ContactDetails", { contact });
           } else {
             Alert.alert(
               "Incoming call",
@@ -143,6 +130,7 @@ export default function App() {
                   width: 30,
                   height: 30,
                   borderRadius: 50,
+
                   margin: 10,
                 }}
               />
