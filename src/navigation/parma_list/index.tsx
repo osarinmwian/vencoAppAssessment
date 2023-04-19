@@ -2,7 +2,7 @@ import { NavigationProp, RouteProp } from "@react-navigation/native";
 
 export type RouteParmaList = {
   HomeScreen: undefined;
-  CallerDetailsScreen: undefined;
+  CallerDetailsScreen: { contact: any };
 };
 
 export type RoutesStackParmaList<T extends keyof RouteParmaList> = {

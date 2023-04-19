@@ -5,7 +5,8 @@ const CallerDetailsScreen = ({ route }: any) => {
   const { contact } = route.params;
 
   return (
-    <View>
+    <View style={{ marginTop: 50 }}>
+      <Text> AMMMAMMAMMMAMAMMAMM</Text>
       <Image source={{ uri: contact.thumbnailPath }} />
       <Text>
         {contact.firstName} {contact.lastName}

@@ -49,69 +49,49 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    const handleAppStateChange = async (nextAppState: string) => {
-      if (nextAppState === "active" && contacts && contacts.length > 0) {
-        const storedNumber = await AsyncStorage.getItem("encryptedNumber");
+    const notificationTimer = setTimeout(async () => {
+      if (contacts && contacts.length > 0) {
         const incomingCallNumber = contacts[0].phoneNumbers[0].number;
-        if (incomingCallNumber === storedNumber) {
-          const contact = contacts.find((contact: { phoneNumbers: any[] }) =>
-            contact.phoneNumbers.find(
-              (phoneNumber: { number: string }) =>
-                phoneNumber.number === incomingCallNumber
-            )
-          );
-          if (contact) {
-            Alert.alert(
-              "Incoming call",
-              `phone number ${incomingCallNumber} not found !`,
-              [
-                {
-                  text: "Answer",
-                  onPress: () => console.log("Answer pressed"),
-                  style: "cancel",
-                },
-                {
-                  text: "Ignore",
-                  onPress: () => console.log("Ignore pressed"),
-                  style: "cancel",
-                },
-                {
-                  text: "View Contact",
-                  onPress: () => {
-                    navigation.navigate("CallerDetailsScreen");
-                    // Navigate to contact details screen
-                    // You can use any navigation library for this
-                  },
-                  style: "cancel",
-                },
-              ]
-            );
-          } else {
-            Alert.alert(
-              "Incoming call",
-              `phone number ${incomingCallNumber} not found !`,
-              [
-                {
-                  text: "Answer",
-                  onPress: () => console.log("Answer pressed"),
-                  style: "cancel",
-                },
-                {
-                  text: "Ignore",
-                  onPress: () => console.log("Ignore pressed"),
-                  style: "cancel",
-                },
-              ]
-            );
-          }
-        }
+        const encryptedNumber = await encryptNumber(incomingCallNumber);
+        await AsyncStorage.setItem("encryptedNumber", encryptedNumber);
+        Alert.alert(
+          "Incoming call",
+          `You have an incoming call from ${contacts.firstName || "Anna"} ${
+            contacts.lastName || "Haro"
+          } (${incomingCallNumber}),  ${
+            contacts.emails?.[0].email || "anaharo24@gmail.com"
+          }`,
+          [
+            {
+              text: "Answer",
+              onPress: () => {
+                navigation.navigate("CallerDetailsScreen", {
+                  contact: contacts,
+                });
+                // Navigate to contact details screen
+                // You can use any navigation library for this
+              },
+              style: "cancel",
+            },
+            {
+              text: "Ignore",
+              onPress: () => console.log("Ignore pressed"),
+              style: "cancel",
+            },
+          ]
+        );
       }
-    };
+    }, 5000);
+
     handleEncryptNumber();
-    AppState.addEventListener("change", handleAppStateChange);
+    AppState.addEventListener("change", (nextAppState) => {
+      if (nextAppState === "inactive") {
+        clearTimeout(notificationTimer);
+      }
+    });
 
     return () => {
-      AppState.addEventListener("change", handleAppStateChange);
+      clearTimeout(notificationTimer);
     };
   }, []);
   const handleEncryptNumber = async () => {
