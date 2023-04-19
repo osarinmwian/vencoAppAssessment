@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
     borderTopLeftRadius: WP(6),
     borderTopRightRadius: WP(6),
     height: WP(100),
-    backgroundColor: COLORS.lightBlack,
+    backgroundColor: COLORS.background,
     padding: WP(2.7),
     alignSelf: "center",
     marginTop: WP(10),

@@ -7,6 +7,7 @@ import {
   Alert,
   Image,
   TextInput,
+  TouchableOpacity,
 } from "react-native";
 import * as Contacts from "expo-contacts";
 import { useEffect, useState } from "react";
@@ -16,9 +17,14 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RouteParmaList } from "../../navigation/parma_list";
 import { styles } from "./styles";
 import Input from "../../component/input";
+import CallModal from "../call_modal";
 
 export default function HomeScreen() {
   let [error, setError] = useState("");
+  const [isModalVisible, setModalVisible] = useState(false);
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
   let [contacts, setContacts] = useState<any | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
   const navigation = useNavigation<NavigationProp<RouteParmaList>>();
@@ -134,7 +140,10 @@ export default function HomeScreen() {
       return filteredContacts.map((contact: any, index: any) => {
         return (
           <View key={index} style={styles.contact}>
-            <View style={styles.content}>
+            <TouchableOpacity
+              style={styles.content}
+              onPress={() => toggleModal()}
+            >
               <Image
                 source={{ uri: contact.thumbnailPath || placeholder }}
                 style={styles.image}
@@ -144,7 +153,7 @@ export default function HomeScreen() {
                   {contact.firstName} {contact.lastName}
                 </Text>
               </View>
-            </View>
+            </TouchableOpacity>
           </View>
         );
       });
@@ -154,16 +163,22 @@ export default function HomeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.hwaderText}>Contacts</Text>
-      <Input
-        placeholder="Search"
-        inputStyle={styles.searchInput}
-        value={searchQuery}
-        onChangeText={handleSearch}
+    <>
+      <SafeAreaView style={styles.container}>
+        <Text style={styles.hwaderText}>Contacts</Text>
+        <Input
+          placeholder="Search"
+          inputStyle={styles.searchInput}
+          value={searchQuery}
+          onChangeText={handleSearch}
+        />
+        <ScrollView>{getContactRows()}</ScrollView>
+        <Text>{error}</Text>
+      </SafeAreaView>
+      <CallModal
+        isVisible={isModalVisible}
+        closeModal={() => setModalVisible(!isModalVisible)}
       />
-      <ScrollView>{getContactRows()}</ScrollView>
-      <Text>{error}</Text>
-    </SafeAreaView>
+    </>
   );
 }
