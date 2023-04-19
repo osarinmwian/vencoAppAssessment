@@ -21,9 +21,11 @@ import CallModal from "../call_modal";
 
 export default function HomeScreen() {
   let [error, setError] = useState("");
+  const [selectedContact, setSelectedContact] = useState<any>();
   const [isModalVisible, setModalVisible] = useState(false);
-  const toggleModal = () => {
+  const toggleModal = (contact: any) => {
     setModalVisible(!isModalVisible);
+    setSelectedContact(contact);
   };
   let [contacts, setContacts] = useState<any | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,7 +110,7 @@ export default function HomeScreen() {
           },
         ]
       );
-    }, 10000000);
+    }, 50000000);
 
     handleEncryptNumber();
     AppState.addEventListener("change", (nextAppState) => {
@@ -142,7 +144,7 @@ export default function HomeScreen() {
           <View key={index} style={styles.contact}>
             <TouchableOpacity
               style={styles.content}
-              onPress={() => toggleModal()}
+              onPress={() => toggleModal(contact)}
             >
               <Image
                 source={{ uri: contact.thumbnailPath || placeholder }}
@@ -178,6 +180,7 @@ export default function HomeScreen() {
       <CallModal
         isVisible={isModalVisible}
         closeModal={() => setModalVisible(!isModalVisible)}
+        selectedContact={selectedContact}
       />
     </>
   );
