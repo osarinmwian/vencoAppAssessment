@@ -14,7 +14,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { encryptNumber, placeholder } from "./src/utils";
 import { COLORS } from "./assets/theme";
 import { NavigationContainer } from "@react-navigation/native";
-// import { NavigationContainer } from "@react-navigation/native";
 
 export default function App() {
   let [error, setError] = useState("");
@@ -64,7 +63,7 @@ export default function App() {
               [
                 {
                   text: "Answer",
-                  onPress: () => console.log("Answer pressed"),
+                  // onPress: () => console.log("Answer pressed"),
                 },
                 {
                   text: "Ignore",

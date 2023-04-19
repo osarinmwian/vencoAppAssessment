@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Image } from "react-native";
 
-const ContactDetails = ({ route }: any) => {
+const CallerDetailsScreen = ({ route }: any) => {
   const { contact } = route.params;
 
   return (
@@ -40,4 +40,4 @@ const ContactDetails = ({ route }: any) => {
   );
 };
 
-export default ContactDetails;
+export default CallerDetailsScreen;
