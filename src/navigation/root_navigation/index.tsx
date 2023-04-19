@@ -9,11 +9,11 @@ const RootNavigation = () => {
   return (
     <RootStack.Navigator screenOptions={{ headerShown: false }}>
       <RootStack.Group>
+        <RootStack.Screen name="HomeScreen" component={HomeScreen} />
         <RootStack.Screen
           name="CallerDetailsScreen"
           component={CallerDetailsScreen}
         />
-        <RootStack.Screen name="HomeScreen" component={HomeScreen} />
       </RootStack.Group>
     </RootStack.Navigator>
   );
