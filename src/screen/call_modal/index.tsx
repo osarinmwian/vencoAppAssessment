@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Text, Linking, Alert } from "react-native";
 import CustomModal from "../../component/modal";
 import { styles } from "./styles";
