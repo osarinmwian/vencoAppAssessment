@@ -1,21 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React from "react";
-
 import { ViewStyle } from "react-native";
-
 import Modal from "react-native-modal";
 
 interface CustomModalProps {
-  testID?: string;
-
   isVisible: boolean;
-
   onBackdropPress?(): void;
-
   children?: React.ReactNode;
-
   modalProps?: object;
-
   style?: ViewStyle;
 }
 
