@@ -4,7 +4,6 @@ import HomeScreen from "../../screen/home";
 import { RouteParmaList } from "../parma_list";
 
 const RootStack = createStackNavigator<RouteParmaList>();
-
 const RootNavigation = () => {
   return (
     <RootStack.Navigator screenOptions={{ headerShown: false }}>

@@ -1,42 +1,46 @@
 import React from "react";
 import { View, Text, Image } from "react-native";
+import { placeholder } from "../../utils";
+import { styles } from "./styles";
 
 const CallerDetailsScreen = ({ route }: any) => {
   const { contact } = route.params;
 
   return (
-    <View style={{ marginTop: 50 }}>
-      <Text> AMMMAMMAMMMAMAMMAMM</Text>
-      <Image source={{ uri: contact.thumbnailPath }} />
-      <Text>
-        {contact.firstName} {contact.lastName}
-      </Text>
-      {contact.birthday ? (
-        <Text>
-          Birthday: {contact.birthday.month}/{contact.birthday.day}/
-          {contact.birthday.year}
-        </Text>
-      ) : null}
-      {contact.phoneNumbers ? (
-        <View>
-          <Text>Phone numbers:</Text>
-          {contact.phoneNumbers.map((phoneNumber: any, index: number) => (
-            <Text key={index}>
-              {phoneNumber.label}: {phoneNumber.number}
-            </Text>
-          ))}
+    <View style={styles.container}>
+      <View style={styles.content}>
+        <Image
+          source={{ uri: contact.thumbnailPath || placeholder }}
+          style={styles.image}
+        />
+        <View style={styles.viewStyle}>
+          <Text style={styles.headerText}>Name:</Text>
+          <Text style={styles.text}>
+            {contact.firstName} {contact.lastName}
+          </Text>
         </View>
-      ) : null}
-      {contact.emails ? (
-        <View>
-          <Text>Emails:</Text>
-          {contact.emails.map((email: any, index: number) => (
-            <Text key={index}>
-              {email.label}: {email.email}
-            </Text>
-          ))}
-        </View>
-      ) : null}
+
+        {contact.phoneNumbers ? (
+          <View>
+            <Text style={styles.headerText}>Phone numbers:</Text>
+            {contact.phoneNumbers.map((phoneNumber: any, index: number) => (
+              <Text key={index} style={styles.text}>
+                {phoneNumber.label}: {phoneNumber.number}
+              </Text>
+            ))}
+          </View>
+        ) : null}
+        {contact.emails ? (
+          <View style={styles.viewStyle}>
+            <Text style={styles.headerText}>Emails:</Text>
+            {contact.emails.map((email: any, index: number) => (
+              <Text key={index} style={styles.text}>
+                {email.label}: {email.email}
+              </Text>
+            ))}
+          </View>
+        ) : null}
+      </View>
     </View>
   );
 };

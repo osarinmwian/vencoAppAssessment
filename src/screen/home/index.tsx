@@ -1,6 +1,5 @@
 import {
   AppState,
-  StyleSheet,
   Text,
   View,
   SafeAreaView,
@@ -13,9 +12,9 @@ import * as Contacts from "expo-contacts";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { encryptNumber, placeholder } from "../../utils";
-import { COLORS, SIZE } from "../../../assets/theme";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RouteParmaList } from "../../navigation/parma_list";
+import { styles } from "./styles";
 
 export default function HomeScreen() {
   let [error, setError] = useState("");
@@ -49,83 +48,24 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    // const notificationTimer = setInterval(async () => {
-    //   if (!contacts || contacts.length === 0) {
-    //     Alert.alert(
-    //       "Incoming call",
-    //       "You have an incoming call from an unknown number",
-    //       [
-    //         {
-    //           text: "Answer",
-    //           onPress: () => {
-    //             navigation.navigate("CallerDetailsScreen", {
-    //               contact: contacts,
-    //             });
-    //           },
-    //         },
-
-    //         {
-    //           text: "Ignore",
-    //           onPress: () => console.log("Ignore pressed"),
-    //           style: "cancel",
-    //         },
-    //       ]
-    //     );
-    //     return;
-    //   }
-
-    //   const incomingCallNumber = contacts[0].phoneNumbers[0].number;
-    //   const incomingCallFirstName = contacts[0].firstName[0].string;
-    //   const incomingCallLastName = contacts[0].lastName[0].string;
-    //   const encryptedNumber = await encryptNumber(incomingCallNumber);
-    //   await AsyncStorage.setItem("encryptedNumber", encryptedNumber);
-
-    //   Alert.alert(
-    //     "Incoming call",
-    //     `You have an incoming call from ${incomingCallFirstName || "Anna"} ${
-    //       incomingCallLastName || "Haro"
-    //     } (${incomingCallNumber}),  ${
-    //       contacts.emails?.[0].email || "anaharo24@gmail.com"
-    //     }`,
-    //     [
-    //       {
-    //         text: "Answer",
-    //         onPress: () => {
-    //           navigation.navigate("CallerDetailsScreen", {
-    //             contact: contacts,
-    //           });
-    //         },
-    //       },
-    //       {
-    //         text: "cancel",
-    //         onPress: () => console.log("Ignore pressed"),
-    //         style: "cancel",
-    //       },
-    //     ]
-    //   );
-    // }, 10000);
-
     const incomingCall = setInterval(async () => {
-      if (contacts && contacts.length > 0) {
-        const incomingCallNumber = contacts[0].phoneNumbers[0].number;
-        const encryptedNumber = await encryptNumber(incomingCallNumber);
-        await AsyncStorage.setItem("encryptedNumber", encryptedNumber);
+      const randomIndex = Math.floor(Math.random() * contacts.length);
+      const currentContact = contacts[randomIndex];
+      const incomingCallNumber = currentContact.phoneNumbers[0].number;
+      const encryptedNumber = await encryptNumber(incomingCallNumber);
+      await AsyncStorage.setItem("encryptedNumber", encryptedNumber);
+      if (!contacts || contacts.length === 0) {
         Alert.alert(
           "Incoming call",
-          `You have an incoming call from ${contacts.firstName || "Anna"} ${
-            contacts.lastName || "Haro"
-          } (${incomingCallNumber}),  ${
-            contacts.emails?.[0].email || "anaharo24@gmail.com"
-          }`,
+          "You have an incoming call from an unknown number",
           [
             {
               text: "Answer",
               onPress: () => {
                 navigation.navigate("CallerDetailsScreen", {
-                  contact: contacts,
+                  contact: currentContact,
                 });
               },
-              style: "cancel",
             },
             {
               text: "Ignore",
@@ -134,8 +74,34 @@ export default function HomeScreen() {
             },
           ]
         );
+        return;
       }
-    }, 10000);
+
+      Alert.alert(
+        "Incoming call",
+        `You have an incoming call from ${currentContact.firstName || "Anna"} ${
+          currentContact.lastName || "Haro"
+        } (${incomingCallNumber}),  ${
+          currentContact.emails?.[0].email || "anaharo24@gmail.com"
+        }`,
+        [
+          {
+            text: "Answer",
+            onPress: () => {
+              navigation.navigate("CallerDetailsScreen", {
+                contact: currentContact,
+              });
+            },
+            style: "cancel",
+          },
+          {
+            text: "Ignore",
+            onPress: () => console.log("Ignore pressed"),
+            style: "cancel",
+          },
+        ]
+      );
+    }, 10000000);
 
     handleEncryptNumber();
     AppState.addEventListener("change", (nextAppState) => {
@@ -167,29 +133,13 @@ export default function HomeScreen() {
       return filteredContacts.map((contact: any, index: any) => {
         return (
           <View key={index} style={styles.contact}>
-            <View
-              style={{
-                backgroundColor: COLORS.background,
-
-                marginVertical: 5,
-                borderRadius: 10,
-                flexDirection: "row",
-                width: "100%",
-                height: 50,
-              }}
-            >
+            <View style={styles.content}>
               <Image
                 source={{ uri: contact.thumbnailPath || placeholder }}
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 50,
-
-                  margin: 10,
-                }}
+                style={styles.image}
               />
               <View>
-                <Text style={{ marginTop: 15 }}>
+                <Text style={styles.text}>
                   {contact.firstName} {contact.lastName}
                 </Text>
               </View>
@@ -204,7 +154,7 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.text}>Contacts</Text>
+      <Text style={styles.hwaderText}>Contacts</Text>
       <TextInput
         placeholder="Search"
         style={styles.searchInput}
@@ -216,89 +166,3 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.white,
-    marginTop: 50,
-  },
-  contact: {
-    flexDirection: "row",
-    marginHorizontal: 10,
-  },
-  text: {
-    fontSize: SIZE.h10,
-    color: COLORS.gray,
-    alignSelf: "center",
-    marginVertical: 10,
-  },
-  searchInput: {
-    paddingHorizontal: 10,
-    paddingVertical: 15,
-    borderRadius: 5,
-    borderColor: COLORS.gray,
-    marginHorizontal: 10,
-    marginBottom: 10,
-    backgroundColor: COLORS.background,
-  },
-});
-
-// const handleAppStateChange = async (nextAppState: string) => {
-//   if (nextAppState === "active" && contacts && contacts.length > 0) {
-//     const storedNumber = await AsyncStorage.getItem("encryptedNumber");
-//     const incomingCallNumber = contacts[0].phoneNumbers[0].number;
-//     if (incomingCallNumber === storedNumber) {
-//       const contact = contacts.find((contact: { phoneNumbers: any[] }) =>
-//         contact.phoneNumbers.find(
-//           (phoneNumber: { number: string }) =>
-//             phoneNumber.number === incomingCallNumber
-//         )
-//       );
-//       if (contact) {
-//         Alert.alert(
-//           "Incoming call",
-//           `phone number ${incomingCallNumber} not found !`,
-//           [
-//             {
-//               text: "Answer",
-//               onPress: () => console.log("Answer pressed"),
-//               style: "cancel",
-//             },
-//             {
-//               text: "Ignore",
-//               onPress: () => console.log("Ignore pressed"),
-//               style: "cancel",
-//             },
-//             {
-//               text: "View Contact",
-// onPress: () => {
-//   navigation.navigate("HomeScreen");
-//   // Navigate to contact details screen
-//   // You can use any navigation library for this
-// },
-//               style: "cancel",
-//             },
-//           ]
-//         );
-//       } else {
-//         Alert.alert(
-//           "Incoming call",
-//           `phone number ${incomingCallNumber} not found !`,
-//           [
-//             {
-//               text: "Answer",
-//               onPress: () => console.log("Answer pressed"),
-//               style: "cancel",
-//             },
-//             {
-//               text: "Ignore",
-//               onPress: () => console.log("Ignore pressed"),
-//               style: "cancel",
-//             },
-//           ]
-//         );
-//       }
-//     }
-//   }
-// };
