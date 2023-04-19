@@ -14,11 +14,14 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { encryptNumber, placeholder } from "../../utils";
 import { COLORS, SIZE } from "../../../assets/theme";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RouteParmaList } from "../../navigation/parma_list";
 
 export default function HomeScreen() {
   let [error, setError] = useState("");
   let [contacts, setContacts] = useState<any | undefined>();
   const [searchQuery, setSearchQuery] = useState("");
+  const navigation = useNavigation<NavigationProp<RouteParmaList>>();
   useEffect(() => {
     (async () => {
       const { status } = await Contacts.requestPermissionsAsync();
@@ -65,10 +68,21 @@ export default function HomeScreen() {
                 {
                   text: "Answer",
                   onPress: () => console.log("Answer pressed"),
+                  style: "cancel",
                 },
                 {
                   text: "Ignore",
                   onPress: () => console.log("Ignore pressed"),
+                  style: "cancel",
+                },
+                {
+                  text: "View Contact",
+                  onPress: () => {
+                    navigation.navigate("CallerDetailsScreen");
+                    // Navigate to contact details screen
+                    // You can use any navigation library for this
+                  },
+                  style: "cancel",
                 },
               ]
             );
@@ -80,10 +94,12 @@ export default function HomeScreen() {
                 {
                   text: "Answer",
                   onPress: () => console.log("Answer pressed"),
+                  style: "cancel",
                 },
                 {
                   text: "Ignore",
                   onPress: () => console.log("Ignore pressed"),
+                  style: "cancel",
                 },
               ]
             );

@@ -1,9 +1,9 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import ContactDetails from "../../screen/caller_details";
 import CallerDetailsScreen from "../../screen/caller_details";
 import HomeScreen from "../../screen/home";
+import { RouteParmaList } from "../parma_list";
 
-const RootStack = createStackNavigator();
+const RootStack = createStackNavigator<RouteParmaList>();
 
 const RootNavigation = () => {
   return (
