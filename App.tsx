@@ -13,12 +13,12 @@ import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { encryptNumber, placeholder } from "./src/utils";
 import { COLORS } from "./assets/theme";
-import { useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
+// import { NavigationContainer } from "@react-navigation/native";
 
 export default function App() {
   let [error, setError] = useState("");
   let [contacts, setContacts] = useState<any | undefined>();
-
   useEffect(() => {
     (async () => {
       const { status } = await Contacts.requestPermissionsAsync();
@@ -58,8 +58,20 @@ export default function App() {
             )
           );
           if (contact) {
-            const navigation = useNavigation();
-            navigation.navigate("ContactDetails", { contact });
+            Alert.alert(
+              "Incoming call",
+              `phone number ${incomingCallNumber} not found !`,
+              [
+                {
+                  text: "Answer",
+                  onPress: () => console.log("Answer pressed"),
+                },
+                {
+                  text: "Ignore",
+                  onPress: () => console.log("Ignore pressed"),
+                },
+              ]
+            );
           } else {
             Alert.alert(
               "Incoming call",
@@ -158,10 +170,12 @@ export default function App() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView>{getContactRows()}</ScrollView>
-      <Text>{error}</Text>
-    </SafeAreaView>
+    <NavigationContainer>
+      <SafeAreaView style={styles.container}>
+        <ScrollView>{getContactRows()}</ScrollView>
+        <Text>{error}</Text>
+      </SafeAreaView>
+    </NavigationContainer>
   );
 }
 
