@@ -76,28 +76,6 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const incomingCall = setInterval(async () => {
-      if (!contacts || contacts.length === 0) {
-        Alert.alert(
-          "Incoming call",
-          "You have an incoming call from an unknown number",
-          [
-            {
-              text: "Answer",
-              onPress: () => {
-                navigation.navigate("CallerDetailsScreen", {
-                  contact: currentContact,
-                });
-              },
-            },
-            {
-              text: "cancel",
-              onPress: () => console.log("cancel pressed"),
-              style: "cancel",
-            },
-          ]
-        );
-        return;
-      }
       const randomIndex = Math.floor(Math.random() * contacts.length);
       const currentContact = contacts[randomIndex];
       const phoneNumbers = currentContact.phoneNumbers || [];
@@ -154,7 +132,29 @@ export default function HomeScreen() {
       } else {
         return incomingCallNumber;
       }
-    }, 20000);
+      if (!contacts || contacts.length === 0) {
+        Alert.alert(
+          "Incoming call",
+          "You have an incoming call from an unknown number",
+          [
+            {
+              text: "Answer",
+              onPress: () => {
+                navigation.navigate("CallerDetailsScreen", {
+                  contact: currentContact,
+                });
+              },
+            },
+            {
+              text: "cancel",
+              onPress: () => console.log("cancel pressed"),
+              style: "cancel",
+            },
+          ]
+        );
+        return;
+      }
+    }, 40000);
 
     handleEncryptNumber();
     AppState.addEventListener("change", (nextAppState) => {
