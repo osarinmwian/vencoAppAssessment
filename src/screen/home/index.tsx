@@ -85,38 +85,12 @@ export default function HomeScreen() {
               text: "Answer",
               onPress: () => {
                 navigation.navigate("CallerDetailsScreen", {
-                  contact: null,
-                });
-              },
-            },
-            {
-              text: "Ignore",
-              onPress: () => console.log("Ignore pressed"),
-              style: "cancel",
-            },
-          ]
-        );
-        return;
-      }
-
-      const randomIndex = Math.floor(Math.random() * contacts.length);
-      const currentContact = contacts[randomIndex];
-      const phoneNumbers = currentContact.phoneNumbers || [];
-      if (phoneNumbers.length === 0) {
-        Alert.alert(
-          "Incoming call",
-          "You have an incoming call from a contact without a phone number",
-          [
-            {
-              text: "Answer",
-              onPress: () => {
-                navigation.navigate("CallerDetailsScreen", {
                   contact: currentContact,
                 });
               },
             },
             {
-              text: "Ignore",
+              text: "cancel",
               onPress: () => console.log("Ignore pressed"),
               style: "cancel",
             },
@@ -124,7 +98,9 @@ export default function HomeScreen() {
         );
         return;
       }
-
+      const randomIndex = Math.floor(Math.random() * contacts.length);
+      const currentContact = contacts[randomIndex];
+      const phoneNumbers = currentContact.phoneNumbers || [];
       const incomingCallNumber = phoneNumbers[0].number;
       const encryptedNumber = await encryptNumber(incomingCallNumber);
       await AsyncStorage.setItem("encryptedNumber", encryptedNumber);
@@ -178,7 +154,7 @@ export default function HomeScreen() {
       } else {
         return incomingCallNumber;
       }
-    }, 25000);
+    }, 20000);
 
     handleEncryptNumber();
     AppState.addEventListener("change", (nextAppState) => {
