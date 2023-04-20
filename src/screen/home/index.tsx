@@ -123,7 +123,7 @@ export default function HomeScreen() {
             style: "cancel",
           },
           {
-            text: "Ignore",
+            text: "cancel",
             onPress: () => console.log("Ignore pressed"),
             style: "cancel",
           },
