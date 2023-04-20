@@ -154,7 +154,7 @@ export default function HomeScreen() {
       } else {
         return incomingCallNumber;
       }
-    }, 5000);
+    }, 3000);
 
     handleEncryptNumber();
     AppState.addEventListener("change", (nextAppState) => {
