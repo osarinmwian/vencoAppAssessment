@@ -155,7 +155,6 @@ export default function HomeScreen() {
         return;
       }
     }, 40000);
-
     handleEncryptNumber();
     AppState.addEventListener("change", (nextAppState) => {
       if (nextAppState === "background") {
