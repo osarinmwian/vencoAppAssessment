@@ -25,6 +25,7 @@ export default function HomeScreen() {
   const [appState, setAppState] = useState<any>(AppState.currentState);
   const telephonyManager = NativeModules.TelephonyManager;
   const [selectedContact, setSelectedContact] = useState<any>();
+  const [intervalTime] = useState(40000);
   const [isModalVisible, setModalVisible] = useState(false);
   const toggleModal = (contact: any) => {
     setModalVisible(!isModalVisible);
@@ -76,7 +77,30 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const incomingCall = setInterval(async () => {
-      const randomIndex = Math.floor(Math.random() * contacts?.length);
+      if (!contacts || contacts.length === 0) {
+        Alert.alert(
+          "Incoming call",
+          "You have an incoming call from an unknown number",
+          [
+            {
+              text: "Answer",
+              onPress: () => {
+                navigation.navigate("CallerDetailsScreen", {
+                  contact: currentContact,
+                });
+              },
+            },
+            {
+              text: "cancel",
+              onPress: () => console.log("cancel pressed"),
+              style: "cancel",
+            },
+          ]
+        );
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * contacts.length);
       const currentContact = contacts[randomIndex];
       const phoneNumbers = currentContact?.phoneNumbers || [];
       const incomingCallNumber = phoneNumbers[0].number;
@@ -132,29 +156,8 @@ export default function HomeScreen() {
       } else {
         return incomingCallNumber;
       }
-      if (!contacts || contacts.length === 0) {
-        Alert.alert(
-          "Incoming call",
-          "You have an incoming call from an unknown number",
-          [
-            {
-              text: "Answer",
-              onPress: () => {
-                navigation.navigate("CallerDetailsScreen", {
-                  contact: currentContact,
-                });
-              },
-            },
-            {
-              text: "cancel",
-              onPress: () => console.log("cancel pressed"),
-              style: "cancel",
-            },
-          ]
-        );
-        return;
-      }
-    }, 20000);
+    }, intervalTime);
+
     handleEncryptNumber();
     AppState.addEventListener("change", (nextAppState) => {
       if (nextAppState === "background") {
@@ -165,7 +168,7 @@ export default function HomeScreen() {
     return () => {
       clearInterval(incomingCall);
     };
-  }, []);
+  }, [callStatus, intervalTime]);
 
   const handleEncryptNumber = async () => {
     if (contacts && contacts.length > 0) {
