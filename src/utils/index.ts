@@ -46,3 +46,7 @@ export const encryptNumber = async (phoneNumber: string): Promise<string> => {
     return encrypted;
   };
 export const placeholder = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUcrp83BUBNmqMskS8X3XpXQq8-a_BZ6RDCL7meR3w-zMSqrtM5ZJFyChGokStk50j_S0&usqp=CAU'
+
+export const  getRandomInterval =(min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}

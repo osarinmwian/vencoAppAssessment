@@ -12,7 +12,7 @@ import {
 import * as Contacts from "expo-contacts";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { encryptNumber, placeholder } from "../../utils";
+import { encryptNumber, getRandomInterval, placeholder } from "../../utils";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RouteParmaList } from "../../navigation/parma_list";
 import { styles } from "./styles";
@@ -25,7 +25,6 @@ export default function HomeScreen() {
   const [appState, setAppState] = useState<any>(AppState.currentState);
   const telephonyManager = NativeModules.TelephonyManager;
   const [selectedContact, setSelectedContact] = useState<any>();
-  const [intervalTime] = useState(40000);
   const [isModalVisible, setModalVisible] = useState(false);
   const toggleModal = (contact: any) => {
     setModalVisible(!isModalVisible);
@@ -76,7 +75,13 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    const incomingCall = setInterval(async () => {
+    const displayIncomingCall = async () => {
+      const randomIndex = Math.floor(Math.random() * contacts?.length);
+      const currentContact = contacts[randomIndex];
+      const phoneNumbers = currentContact?.phoneNumbers || [];
+      const incomingCallNumber = phoneNumbers[0].number;
+      const encryptedNumber = await encryptNumber(incomingCallNumber);
+      await AsyncStorage.setItem("encryptedNumber", encryptedNumber);
       if (!contacts || contacts.length === 0) {
         Alert.alert(
           "Incoming call",
@@ -97,79 +102,65 @@ export default function HomeScreen() {
             },
           ]
         );
-        return;
-      }
-
-      const randomIndex = Math.floor(Math.random() * contacts.length);
-      const currentContact = contacts[randomIndex];
-      const phoneNumbers = currentContact?.phoneNumbers || [];
-      const incomingCallNumber = phoneNumbers[0].number;
-      const encryptedNumber = await encryptNumber(incomingCallNumber);
-      await AsyncStorage.setItem("encryptedNumber", encryptedNumber);
-
-      Alert.alert(
-        "Incoming call",
-        `You have an incoming call from ${currentContact.firstName || "Anna"} ${
-          currentContact.lastName || "Haro"
-        } (${incomingCallNumber}),  ${
-          currentContact.emails?.[0].email || "anaharo24@gmail.com"
-        }`,
-        [
-          {
-            text: "Answer",
-            onPress: () => {
-              navigation.navigate("CallerDetailsScreen", {
-                contact: currentContact,
-              });
-            },
-            style: "cancel",
-          },
-          {
-            text: "cancel",
-            onPress: () => console.log("cancel pressed"),
-            style: "cancel",
-          },
-        ]
-      );
-
-      if (telephonyManager) {
-        const phoneStateListener = {
-          onCallStateChanged: function (state: any) {
-            switch (state) {
-              case telephonyManager.CALL_STATE_IDLE:
-                setCallStatus("idle");
-                break;
-              case telephonyManager.CALL_STATE_OFFHOOK:
-                setCallStatus("offhook");
-                break;
-              case telephonyManager.CALL_STATE_RINGING:
-                const incomingNumber = telephonyManager.EXTRA_INCOMING_NUMBER;
-                setCallStatus("ringing");
-                setCallStatus(incomingNumber);
-                break;
-              default:
-                break;
-            }
-          },
-        };
-        telephonyManager.listen(phoneStateListener);
       } else {
-        return incomingCallNumber;
+        Alert.alert(
+          "Incoming call",
+          `You have an incoming call from ${
+            currentContact.firstName || "Anna"
+          } ${currentContact.lastName || "Haro"} (${incomingCallNumber}),  ${
+            currentContact.emails?.[0].email || "anaharo24@gmail.com"
+          }`,
+          [
+            {
+              text: "Answer",
+              onPress: () => {
+                navigation.navigate("CallerDetailsScreen", {
+                  contact: currentContact,
+                });
+              },
+              style: "cancel",
+            },
+            {
+              text: "cancel",
+              onPress: () => console.log("cancel pressed"),
+              style: "cancel",
+            },
+          ]
+        );
       }
-    }, intervalTime);
-
-    handleEncryptNumber();
-    AppState.addEventListener("change", (nextAppState) => {
-      if (nextAppState === "background") {
-        clearInterval(incomingCall);
-      }
-    });
-
-    return () => {
-      clearInterval(incomingCall);
     };
-  }, [callStatus, intervalTime]);
+    if (telephonyManager) {
+      const phoneStateListener = {
+        onCallStateChanged: function (state: any) {
+          switch (state) {
+            case telephonyManager.CALL_STATE_IDLE:
+              setCallStatus("idle");
+              break;
+            case telephonyManager.CALL_STATE_OFFHOOK:
+              setCallStatus("offhook");
+              break;
+            case telephonyManager.CALL_STATE_RINGING:
+              const incomingNumber = telephonyManager.EXTRA_INCOMING_NUMBER;
+              setCallStatus("ringing");
+              setCallStatus(incomingNumber);
+              break;
+            default:
+              break;
+          }
+        },
+      };
+      telephonyManager.listen(phoneStateListener);
+    } else {
+      return;
+    }
 
+    setInterval(() => {
+      handleEncryptNumber();
+      if (contacts && contacts.length > 0) {
+        displayIncomingCall();
+      }
+    }, getRandomInterval(10000, 30000));
+  }, [callStatus]);
   const handleEncryptNumber = async () => {
     if (contacts && contacts.length > 0) {
       const incomingCallNumber = contacts[0].phoneNumbers[0].number;
