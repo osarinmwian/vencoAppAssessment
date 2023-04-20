@@ -75,7 +75,7 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    const incomingCall = setTimeout(async () => {
+    const incomingCall = setInterval(async () => {
       const randomIndex = Math.floor(Math.random() * contacts.length);
       const currentContact = contacts[randomIndex];
       const incomingCallNumber = currentContact.phoneNumbers[0].number;
@@ -154,7 +154,7 @@ export default function HomeScreen() {
       } else {
         return incomingCallNumber;
       }
-    }, 5000);
+    }, 20000);
 
     handleEncryptNumber();
     AppState.addEventListener("change", (nextAppState) => {
