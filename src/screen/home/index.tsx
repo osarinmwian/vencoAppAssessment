@@ -23,6 +23,7 @@ import CallModal from "../call_modal";
 export default function HomeScreen() {
   let [error, setError] = useState("");
   const [callStatus, setCallStatus] = useState("idle");
+  const [appState, setAppState] = useState<any>(AppState.currentState);
   const telephonyManager = NativeModules.TelephonyManager;
   const [selectedContact, setSelectedContact] = useState<any>();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -36,6 +37,20 @@ export default function HomeScreen() {
   useEffect(() => {
     (async () => {
       const { status } = await Contacts.requestPermissionsAsync();
+      const handleAppStateChange = (nextAppState: string | any) => {
+        if (
+          appState.match(/inactive|background/) &&
+          nextAppState === "active"
+        ) {
+          Alert.alert("App has come to the foreground!");
+        } else if (
+          appState === "active" &&
+          nextAppState.match(/quit|background/)
+        ) {
+          Alert.alert("App has gone to the background or is  quit!");
+        }
+        setAppState(nextAppState);
+      };
       if (status === "granted") {
         const { data } = await Contacts.getContactsAsync({
           fields: [
@@ -56,6 +71,7 @@ export default function HomeScreen() {
       } else {
         setError("Permission to access contacts denied.");
       }
+      AppState.addEventListener("change", handleAppStateChange);
     })();
   }, []);
 
