@@ -76,9 +76,9 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const incomingCall = setInterval(async () => {
-      const randomIndex = Math.floor(Math.random() * contacts.length);
+      const randomIndex = Math.floor(Math.random() * contacts?.length);
       const currentContact = contacts[randomIndex];
-      const phoneNumbers = currentContact.phoneNumbers || [];
+      const phoneNumbers = currentContact?.phoneNumbers || [];
       const incomingCallNumber = phoneNumbers[0].number;
       const encryptedNumber = await encryptNumber(incomingCallNumber);
       await AsyncStorage.setItem("encryptedNumber", encryptedNumber);
@@ -154,7 +154,7 @@ export default function HomeScreen() {
         );
         return;
       }
-    }, 40000);
+    }, 20000);
     handleEncryptNumber();
     AppState.addEventListener("change", (nextAppState) => {
       if (nextAppState === "background") {
