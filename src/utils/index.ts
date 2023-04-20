@@ -1,5 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useState } from "react";
 
 export const encryptNumber = async (phoneNumber: string): Promise<string> => {
     const mapping: {
