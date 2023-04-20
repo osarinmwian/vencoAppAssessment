@@ -12,7 +12,7 @@ import {
 import * as Contacts from "expo-contacts";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { encryptNumber, getRandomInterval, placeholder } from "../../utils";
+import { encryptNumber, placeholder } from "../../utils";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RouteParmaList } from "../../navigation/parma_list";
 import { styles } from "./styles";
@@ -21,10 +21,10 @@ import CallModal from "../call_modal";
 
 export default function HomeScreen() {
   let [error, setError] = useState("");
-  const [callStatus, setCallStatus] = useState("idle");
+  const [callStatus] = useState("idle");
   const [appState, setAppState] = useState<any>(AppState.currentState);
-  const telephonyManager = NativeModules.TelephonyManager;
   const [selectedContact, setSelectedContact] = useState<any>();
+  const [intervalTime] = useState(10000);
   const [isModalVisible, setModalVisible] = useState(false);
   const toggleModal = (contact: any) => {
     setModalVisible(!isModalVisible);
@@ -73,16 +73,11 @@ export default function HomeScreen() {
       AppState.addEventListener("change", handleAppStateChange);
     })();
   }, []);
-
   useEffect(() => {
-    const displayIncomingCall = async () => {
-      const randomIndex = Math.floor(Math.random() * contacts?.length);
-      const currentContact = contacts[randomIndex];
-      const phoneNumbers = currentContact?.phoneNumbers || [];
-      const incomingCallNumber = phoneNumbers[0].number;
-      const encryptedNumber = await encryptNumber(incomingCallNumber);
-      await AsyncStorage.setItem("encryptedNumber", encryptedNumber);
-      if (!contacts || contacts.length === 0) {
+    let incomingCallTimer: any;
+
+    const handleIncomingCall = async () => {
+      if (!contacts || contacts?.length === 0) {
         Alert.alert(
           "Incoming call",
           "You have an incoming call from an unknown number",
@@ -102,13 +97,22 @@ export default function HomeScreen() {
             },
           ]
         );
-      } else {
+        return;
+      }
+      const randomIndex = Math.floor(Math.random() * contacts?.length);
+      const currentContact = contacts[randomIndex];
+      const phoneNumbers = currentContact?.phoneNumbers || [];
+      const incomingCallNumber = phoneNumbers[0]?.number;
+      const encryptedNumber = await encryptNumber(incomingCallNumber);
+      await AsyncStorage.setItem("encryptedNumber", encryptedNumber);
+
+      incomingCallTimer = setTimeout(() => {
         Alert.alert(
           "Incoming call",
           `You have an incoming call from ${
             currentContact.firstName || "Anna"
           } ${currentContact.lastName || "Haro"} (${incomingCallNumber}),  ${
-            currentContact.emails?.[0].email || "anaharo24@gmail.com"
+            currentContact.emails?.[0]?.email || "anaharo24@gmail.com"
           }`,
           [
             {
@@ -127,40 +131,15 @@ export default function HomeScreen() {
             },
           ]
         );
-      }
+      }, 10000);
     };
-    if (telephonyManager) {
-      const phoneStateListener = {
-        onCallStateChanged: function (state: any) {
-          switch (state) {
-            case telephonyManager.CALL_STATE_IDLE:
-              setCallStatus("idle");
-              break;
-            case telephonyManager.CALL_STATE_OFFHOOK:
-              setCallStatus("offhook");
-              break;
-            case telephonyManager.CALL_STATE_RINGING:
-              const incomingNumber = telephonyManager.EXTRA_INCOMING_NUMBER;
-              setCallStatus("ringing");
-              setCallStatus(incomingNumber);
-              break;
-            default:
-              break;
-          }
-        },
-      };
-      telephonyManager.listen(phoneStateListener);
-    } else {
-      return;
-    }
+    handleIncomingCall();
+    handleEncryptNumber();
+    return () => {
+      clearTimeout(incomingCallTimer);
+    };
+  }, [contacts, navigation]);
 
-    setInterval(() => {
-      handleEncryptNumber();
-      if (contacts && contacts.length > 0) {
-        displayIncomingCall();
-      }
-    }, getRandomInterval(10000, 30000));
-  }, [callStatus]);
   const handleEncryptNumber = async () => {
     if (contacts && contacts.length > 0) {
       const incomingCallNumber = contacts[0].phoneNumbers[0].number;
