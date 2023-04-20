@@ -32,10 +32,9 @@ const CallModal = (props: Props) => {
           <Feather name="phone-call" size={50} color="black" />
         </TouchableOpacity>
         {props.selectedContact?.phoneNumbers.map((phoneNumber: any) => (
-          <>
-            <View key={phoneNumber.id}></View>
+          <View key={phoneNumber.id}>
             <Text style={styles.text}>{phoneNumber.number}</Text>
-          </>
+          </View>
         ))}
       </View>
     </CustomModal>

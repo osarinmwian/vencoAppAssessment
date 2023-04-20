@@ -75,16 +75,37 @@ export default function HomeScreen() {
   }, []);
 
   useEffect(() => {
-    const incomingCall = setTimeout(async () => {
-      const randomIndex = Math.floor(Math.random() * contacts.length);
-      const currentContact = contacts[randomIndex];
-      const incomingCallNumber = currentContact.phoneNumbers[0].number;
-      const encryptedNumber = await encryptNumber(incomingCallNumber);
-      await AsyncStorage.setItem("encryptedNumber", encryptedNumber);
+    const incomingCall = setInterval(async () => {
       if (!contacts || contacts.length === 0) {
         Alert.alert(
           "Incoming call",
           "You have an incoming call from an unknown number",
+          [
+            {
+              text: "Answer",
+              onPress: () => {
+                navigation.navigate("CallerDetailsScreen", {
+                  contact: null,
+                });
+              },
+            },
+            {
+              text: "Ignore",
+              onPress: () => console.log("Ignore pressed"),
+              style: "cancel",
+            },
+          ]
+        );
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * contacts.length);
+      const currentContact = contacts[randomIndex];
+      const phoneNumbers = currentContact.phoneNumbers || [];
+      if (phoneNumbers.length === 0) {
+        Alert.alert(
+          "Incoming call",
+          "You have an incoming call from a contact without a phone number",
           [
             {
               text: "Answer",
@@ -103,6 +124,10 @@ export default function HomeScreen() {
         );
         return;
       }
+
+      const incomingCallNumber = phoneNumbers[0].number;
+      const encryptedNumber = await encryptNumber(incomingCallNumber);
+      await AsyncStorage.setItem("encryptedNumber", encryptedNumber);
 
       Alert.alert(
         "Incoming call",
@@ -128,6 +153,7 @@ export default function HomeScreen() {
           },
         ]
       );
+
       if (telephonyManager) {
         const phoneStateListener = {
           onCallStateChanged: function (state: any) {
@@ -142,19 +168,17 @@ export default function HomeScreen() {
                 const incomingNumber = telephonyManager.EXTRA_INCOMING_NUMBER;
                 setCallStatus("ringing");
                 setCallStatus(incomingNumber);
-
                 break;
               default:
                 break;
             }
           },
         };
-
         telephonyManager.listen(phoneStateListener);
       } else {
         return incomingCallNumber;
       }
-    }, 3000);
+    }, 50000);
 
     handleEncryptNumber();
     AppState.addEventListener("change", (nextAppState) => {
