@@ -91,7 +91,7 @@ export default function HomeScreen() {
             },
             {
               text: "cancel",
-              onPress: () => console.log("Ignore pressed"),
+              onPress: () => console.log("cancel pressed"),
               style: "cancel",
             },
           ]
@@ -124,7 +124,7 @@ export default function HomeScreen() {
           },
           {
             text: "cancel",
-            onPress: () => console.log("Ignore pressed"),
+            onPress: () => console.log("cancel pressed"),
             style: "cancel",
           },
         ]
